@@ -1,5 +1,6 @@
-import numpy as np
+from collections import Counter
 
+import numpy as np
 from Obstacle import *
 from others import *
 from Dino import *
@@ -16,7 +17,7 @@ def gameplay(dinoGroup):
     # 游戏参数初始化
     new_ground = Ground(-1 * game_speed)
     scb = Scoreboard()
-    highsc = Scoreboard(width * 0.78)
+    highsc = Scoreboard(y=int(height * 0.2))
     counter = 0
     cacti = pygame.sprite.Group()
     pteras = pygame.sprite.Group()
@@ -33,8 +34,8 @@ def gameplay(dinoGroup):
     HI_image.blit(temp_images[10], temp_rect)
     temp_rect.left += temp_rect.width
     HI_image.blit(temp_images[11], temp_rect)
-    HI_rect.top = height * 0.1
-    HI_rect.left = width * 0.73
+    HI_rect.top = height * 0.2
+    HI_rect.left = width * 0.75
 
     population = len(dinoGroup.sprites())
 
@@ -77,13 +78,13 @@ def gameplay(dinoGroup):
             obstacle_width = 0
             if len(obstacle) > 0:
                 obstacle.sort(key=lambda x: x.rect.left - playerDino.rect.right)
+                for i, o in enumerate(obstacle):
+                    if o.rect.left > playerDino.rect.right:
+                        obstacle_distance = o.rect.left - playerDino.rect.right
+                        obstacle_height = o.rect.height
+                        obstacle_width = o.rect.width
+                        break
 
-                # 获取最近的障碍物的距离
-                obstacle_distance = obstacle[0].rect.left - playerDino.rect.right
-                # 获取最近的障碍物离地面的高度
-                obstacle_height = int(0.98 * height) - obstacle[0].rect.bottom
-                # 获取最近的障碍物的宽度
-                obstacle_width = obstacle[0].rect.width
 
             # 获得游戏速度
             dino_speed = game_speed
@@ -141,13 +142,13 @@ def gameplay(dinoGroup):
                     last_obstacle.add(Cactus(game_speed, 40, 40))
                 else:
                     for l in last_obstacle:
-                        if l.rect.right < width * 0.6 and random.randrange(0, 50) == 10:
+                        if l.rect.right < width * 0.55 and random.randrange(0, 50) == 10:
                             last_obstacle.empty()
                             last_obstacle.add(Cactus(game_speed, 40, 40))
 
             if len(pteras) == 0 and random.randrange(0, 200) == 10 and counter > 500:
                 for l in last_obstacle:
-                    if l.rect.right < width * 0.6:
+                    if l.rect.right < width * 0.55:
                         last_obstacle.empty()
                         last_obstacle.add(Ptera(game_speed, 46, 40))
 
@@ -191,8 +192,6 @@ def gameplay(dinoGroup):
 
             # 检测死亡恐龙数量，如果全部死亡，则游戏结束
             if dinoAlive == 0:
-                gameOver = True
-
                 # 提取出分数
                 scores = []
                 for dino in deadDino:
@@ -220,17 +219,20 @@ def gameplay(dinoGroup):
 
                 scores = np.array(scores, dtype=np.float64)
                 # 精英数量
-                elite_size = 20
+                elite_size = 10
                 # 将scores后面10个设为精英，单独提出来
                 strong_individuals = scores[-elite_size:]
                 normal_individuals = scores[:-elite_size]
                 prob = np.concatenate(
-                    (softmax(normalize(normal_individuals)) * 0.5, softmax(normalize(strong_individuals)) * 0.5))
+                    (softmax(normalize(normal_individuals)) * 0.2, softmax(normalize(strong_individuals)) * 0.8))
                 print("prob: ", prob)
-                print("fitness: ", prob[:10], sum(prob[:10]))
+                print("fitness: ", prob[-10:], sum(prob[-10:]))
                 select_id = np.random.choice(range(population), 2 * population, replace=True,
                                              p=prob)  # replace=True说明可以有重复项，p=prob表示产生的随机选择要符合prob的概率分布
                 print("select_id: ", select_id)
+                # 统计select_id中每个元素出现的次数，以字典的形式返回
+                print("select_id count: ", Counter(select_id))
+
                 selection = []
                 for idx in select_id:
                     deadDino[idx].NN.fitness = prob[idx]
@@ -265,12 +267,12 @@ def gameplay(dinoGroup):
                     dinoGroup.add(Dino(44, 47, deadDino[-i - 1].NN))
                 print("current_high_score: ", current_high_score)
                 print("high_score: ", high_score)
-                return dinoGroup
+                return dinoGroup, current_high_score
             else:
                 playerDino = dinoGroup.sprites()[0]
-            if counter % 700 == 699:
-                new_ground.speed -= 1
-                if game_speed < 21:
+            if game_speed < 21:
+                if counter % 700 == 699:
+                    new_ground.speed -= 1
                     game_speed += 1
             counter = (counter + 1)
         if gameQuit:
@@ -285,15 +287,27 @@ def main():
     Dino.containers = dinoGroup
     population = 1000
     generation = 1000
+
+    # 保存开始时的时间
+    start_time = time.time()
     for i in range(population):
         dinoGroup.add(Dino(44, 47))
     for i in range(generation):
         print()
         print("generation: ", i + 1)
-        dinoGroup = gameplay(dinoGroup)
-    # 将最后一代的最后一个恐龙的神经网络保存下来
-    with open("dino.pkl", "wb") as f:
-        dinoGroup.sprites()[-1].NN.save(f)
+        dinoGroup, score = gameplay(dinoGroup)
+        # 将最后一代的最后一个恐龙的神经网络保存下来
+        filename = "dino" + "_generation_" + str(i + 1) + "_score_" + str(score) + ".pkl"
+        saved_dino_path = os.path.join(os.path.dirname(__file__), "saved_dino")
+        if not os.path.exists(saved_dino_path):
+            os.makedirs(saved_dino_path)
+        # 根据开始时的时间来创建文件夹
+        saved_dino_path = os.path.join(saved_dino_path, str(int(start_time)))
+        if not os.path.exists(saved_dino_path):
+            os.makedirs(saved_dino_path)
+        filename = os.path.join(saved_dino_path, filename)
+        with open(filename, "wb") as f:
+            dinoGroup.sprites()[-1].NN.save(f)
 
     sys.exit()
 

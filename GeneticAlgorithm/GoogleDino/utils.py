@@ -1,14 +1,13 @@
 import os
-import sys
 import pygame
+from pygame.locals import *
 import random
-from pygame import *
-
+import sys
+import time
 pygame.mixer.pre_init(44100, -16, 2, 2048)  # fix audio delay
 pygame.init()
 
-
-scr_size = (width, height) = (1200, 300)
+scr_size = (width, height) = (1200, 200)
 FPS = 60
 gravity = 0.6
 
@@ -114,3 +113,4 @@ def extractDigits(number):
             digits.append(0)
         digits.reverse()
         return digits
+
