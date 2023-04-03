@@ -3,6 +3,7 @@ import random
 import time
 
 from bfs import bfs
+from dfs import dfs
 
 # Easy to read representation for each cardinal direction.
 N, S, W, E = ('n', 's', 'w', 'e')
@@ -286,7 +287,7 @@ class MazeGame(object):
         # Double x position because displayed maze is double-wide.
         console.set_display(y * 2 + 1, x * 4 + 2, value)
 
-    def play(self):
+    def play(self,func = bfs):
         """
         Starts an interactive game on this maze, with random starting and goal
         positions. Returns True if the user won, or False if she quit the game
@@ -297,25 +298,7 @@ class MazeGame(object):
         player_cell = self.maze[player]
         target_cell = self.maze[target]
 
-        route = bfs(self.maze, player_cell, target_cell)
-        # while player != target:
-        #     console.display(str(self.maze))
-        #     self._display(player, '@')
-        #     self._display(target, '$')
-        #
-        #     key = console.get_valid_key(['up', 'down', 'left', 'right', 'q'])
-        #
-        #     if key == 'q':
-        #         return False
-        #
-        #     direction, difx, dify = {'up': (N, 0, -1),
-        #                              'down': (S, 0, 1),
-        #                              'left': (W, -1, 0),
-        #                              'right': (E, 1, 0)}[key]
-        #
-        #     current_cell = self.maze[player]
-        #     if direction not in current_cell:
-        #         player = (player[0] + difx, player[1] + dify)
+        route = func(self.maze, player_cell, target_cell)
         for player in route:
             player = (player.x, player.y)
             console.display(str(self.maze))
@@ -353,3 +336,21 @@ if __name__ == '__main__':
         import traceback
 
         traceback.print_exc(file=open('error_log.txt', 'a'))
+
+    # maze = Maze.generate(width, height)
+    # print(maze)
+
+    # 测试dfs，bfs
+    # start = (random.randrange(0, maze.width),
+    #             random.randrange(0, maze.height))
+    # end = (random.randrange(0, maze.width),
+    #             random.randrange(0, maze.height))
+    # print(start, end)
+    # if dfs(maze, maze[start], maze[end]):
+    #     print('dfs ok')
+    # else:
+    #     print('dfs error')
+    # if bfs(maze, maze[start], maze[end]):
+    #     print('bfs ok')
+    # else:
+    #     print('bfs error')

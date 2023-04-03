@@ -134,3 +134,9 @@ Traceback (most recent call last):
   File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 18, in _display
     os.system('cls')
 KeyboardInterrupt
+Traceback (most recent call last):
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 333, in <module>
+    if not game.play():
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 307, in play
+    time.sleep(0.1)
+KeyboardInterrupt
