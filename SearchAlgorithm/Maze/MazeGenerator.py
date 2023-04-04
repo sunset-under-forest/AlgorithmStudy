@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import random
 import time
-
+import console
+import sys
 from bfs import bfs
 from dfs import dfs
 
@@ -33,6 +34,12 @@ class Cell(object):
         Returns True if all walls are still standing.
         """
         return len(self.walls) == 4
+
+    def get_direction(self, other):
+        """
+        Returns the direction to the given cell from the current one.
+        """
+        return self._wall_to(other)
 
     def _wall_to(self, other):
         """
@@ -263,6 +270,10 @@ class Maze(object):
         m.randomize()
         return m
 
+    # 获取随机位置
+    def get_random_cell(self):
+        return random.choice(self.cells)
+
 
 class MazeGame(object):
     """
@@ -313,8 +324,6 @@ class MazeGame(object):
 
 
 if __name__ == '__main__':
-    import sys
-
     if len(sys.argv) > 1:
         width = int(sys.argv[1])
         if len(sys.argv) > 2:
@@ -325,32 +334,14 @@ if __name__ == '__main__':
         width = 30
         height = 20
 
-    import console
+    {Cell(1, 2, [N, S, E, W]) : 1}
+    # try:
+    #     while True:
+    #         game = MazeGame(Maze.generate(width, height))
+    #         if not game.play():
+    #             break
+    # except:
+    #     import traceback
+    #
+    #     traceback.print_exc(file=open('error_log.txt', 'a'))
 
-    try:
-        while True:
-            game = MazeGame(Maze.generate(width, height))
-            if not game.play():
-                break
-    except:
-        import traceback
-
-        traceback.print_exc(file=open('error_log.txt', 'a'))
-
-    # maze = Maze.generate(width, height)
-    # print(maze)
-
-    # 测试dfs，bfs
-    # start = (random.randrange(0, maze.width),
-    #             random.randrange(0, maze.height))
-    # end = (random.randrange(0, maze.width),
-    #             random.randrange(0, maze.height))
-    # print(start, end)
-    # if dfs(maze, maze[start], maze[end]):
-    #     print('dfs ok')
-    # else:
-    #     print('dfs error')
-    # if bfs(maze, maze[start], maze[end]):
-    #     print('bfs ok')
-    # else:
-    #     print('bfs error')

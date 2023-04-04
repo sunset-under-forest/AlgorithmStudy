@@ -1,142 +1,29 @@
 Traceback (most recent call last):
-  File "D:/Desktop/AI/Algorithm/study/SearchAlgorithm/Maze/MazeGenerator.py", line 328, in <module>
-    while MazeGame(Maze.generate(width, height)).play(): pass
-  File "D:/Desktop/AI/Algorithm/study/SearchAlgorithm/Maze/MazeGenerator.py", line 293, in play
-    key = console.get_valid_key(['up', 'down', 'left', 'right', 'q'])
-  File "D:/Desktop/AI/Algorithm/study/SearchAlgorithm/Maze/MazeGenerator.py", line 293, in play
-    key = console.get_valid_key(['up', 'down', 'left', 'right', 'q'])
-  File "_pydevd_bundle\pydevd_cython_win32_39_64.pyx", line 1589, in _pydevd_bundle.pydevd_cython_win32_39_64.ThreadTracer.__call__
-  File "_pydevd_bundle\pydevd_cython_win32_39_64.pyx", line 929, in _pydevd_bundle.pydevd_cython_win32_39_64.PyDBFrame.trace_dispatch
-  File "_pydevd_bundle\pydevd_cython_win32_39_64.pyx", line 920, in _pydevd_bundle.pydevd_cython_win32_39_64.PyDBFrame.trace_dispatch
-  File "_pydevd_bundle\pydevd_cython_win32_39_64.pyx", line 317, in _pydevd_bundle.pydevd_cython_win32_39_64.PyDBFrame.do_wait_suspend
-  File "D:\CODE\PYTHON\PYCHARM\PyCharm 2022.1\plugins\python\helpers\pydev\pydevd.py", line 1155, in do_wait_suspend
-    self._do_wait_suspend(thread, frame, event, arg, suspend_type, from_this_thread)
-  File "D:\CODE\PYTHON\PYCHARM\PyCharm 2022.1\plugins\python\helpers\pydev\pydevd.py", line 1170, in _do_wait_suspend
-    time.sleep(0.01)
-KeyboardInterrupt
-Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 346, in <module>
-    MazeGame(Maze.generate(width, height)).play()
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 299, in play
-    route = self.maze.find_route(player, target)
-AttributeError: 'Maze' object has no attribute 'find_route'
-Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 346, in <module>
-    MazeGame(Maze.generate(width, height)).play()
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 320, in play
-    self._display(player, '@')
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 284, in _display
-    x, y = pos
-TypeError: cannot unpack non-iterable Cell object
-Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 350, in <module>
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\A_star.py", line 82, in <module>
     if not game.play():
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 322, in play
-    self._display(target, '$')
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 286, in _display
-    console.set_display(y * 2 + 1, x * 4 + 2, value)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 77, in set_display
-    display('\n'.join(lines))
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 65, in display
-    return _display(text)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 18, in _display
-    os.system('cls')
-KeyboardInterrupt
-Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 350, in <module>
-    break
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 323, in play
-    self._display(target, '$')
-KeyboardInterrupt
-Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 349, in <module>
-    if not game.play():
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 321, in play
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 314, in play
     console.display(str(self.maze))
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 65, in display
-    return _display(text)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 18, in _display
-    os.system('cls')
-KeyboardInterrupt
+NameError: name 'console' is not defined
 Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 350, in <module>
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 341, in <module>
     if not game.play():
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 322, in play
-    self._display(player, '@')
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 287, in _display
-    console.set_display(y * 2 + 1, x * 4 + 2, value)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 77, in set_display
-    display('\n'.join(lines))
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 65, in display
-    return _display(text)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 18, in _display
-    os.system('cls')
-KeyboardInterrupt
-Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 350, in <module>
-    if not game.play():
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 321, in play
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 315, in play
     console.display(str(self.maze))
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 65, in display
-    return _display(text)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 19, in _display
-    sys.stdout.write(text)
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 216, in __repr__
+    if not g(x, y) and g(x - 1, y):
 KeyboardInterrupt
 Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 350, in <module>
-    if not game.play():
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 323, in play
-    self._display(target, '$')
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 287, in _display
-    console.set_display(y * 2 + 1, x * 4 + 2, value)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 77, in set_display
-    display('\n'.join(lines))
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 65, in display
-    return _display(text)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 18, in _display
-    os.system('cls')
-KeyboardInterrupt
-Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 350, in <module>
-    if not game.play():
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 323, in play
-    self._display(target, '$')
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 287, in _display
-    console.set_display(y * 2 + 1, x * 4 + 2, value)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 77, in set_display
-    display('\n'.join(lines))
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 65, in display
-    return _display(text)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 18, in _display
-    os.system('cls')
-KeyboardInterrupt
-Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 350, in <module>
-    if not game.play():
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 323, in play
-    self._display(target, '$')
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 287, in _display
-    console.set_display(y * 2 + 1, x * 4 + 2, value)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 77, in set_display
-    display('\n'.join(lines))
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 65, in display
-    return _display(text)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 18, in _display
-    os.system('cls')
-KeyboardInterrupt
-Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 350, in <module>
-    if not game.play():
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 321, in play
-    console.display(str(self.maze))
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 65, in display
-    return _display(text)
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 18, in _display
-    os.system('cls')
-KeyboardInterrupt
-Traceback (most recent call last):
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 333, in <module>
-    if not game.play():
-  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 307, in play
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\A_star.py", line 83, in <module>
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 318, in play
     time.sleep(0.1)
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\A_star.py", line 88, in <module>
+    if not game.play(a_star):
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\MazeGenerator.py", line 315, in play
+    console.display(str(self.maze))
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 65, in display
+    return _display(text)
+  File "D:\Desktop\AI\Algorithm\study\SearchAlgorithm\Maze\console.py", line 18, in _display
+    os.system('cls')
 KeyboardInterrupt
