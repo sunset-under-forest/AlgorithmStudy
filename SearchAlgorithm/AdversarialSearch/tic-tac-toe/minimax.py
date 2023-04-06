@@ -151,6 +151,108 @@ def minimax(state, depth, player):
     return best
 
 
+total_recursion_calls = 0
+
+
+def flush():
+    """
+    Flush the total_recursion_calls variable
+    """
+    global total_recursion_calls, board
+    board = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+    ]
+
+    temp = total_recursion_calls
+    total_recursion_calls = 0
+
+    return temp
+
+
+def min_max(state, depth, player):
+    """
+    AI function that choice the best move
+    :param state: current state of the board
+    :param depth: node index in the tree (0 <= depth <= 9),
+    but never nine in this case (see iaturn() function)
+    :param player: an human or a computer
+    :return: a list with [the best row, best col, best score]
+    """
+    global total_recursion_calls
+    total_recursion_calls += 1
+    if depth == 0 or game_over(state):
+        best_n = evaluate(state)
+        return [-1, -1, best_n]
+
+    # COMP is maximizing; HUMAN is minimizing
+    if player == COMP:
+        best = [-1, -1, -infinity]
+    else:
+        best = [-1, -1, +infinity]
+
+    for cell in empty_cells(state):
+        x, y = cell[0], cell[1]
+        state[x][y] = player
+        best_n = min_max(state, depth - 1, -player)
+        state[x][y] = 0
+        best_n[0], best_n[1] = x, y
+
+        if player == COMP:
+            if best_n[2] > best[2]:
+                best = best_n  # max value
+        else:
+            if best_n[2] < best[2]:
+                best = best_n  # min value
+
+    return best
+
+
+def min_max_alpha_beta(state, depth, player, alpha=-infinity, beta=infinity):
+    """
+    AI function that choice the best move
+    :param state: current state of the board
+    :param depth: node index in the tree (0 <= depth <= 9),
+    but never nine in this case (see iaturn() function)
+    :param player: an human or a computer
+    :return: a list with [the best row, best col, best score]
+    """
+    global total_recursion_calls
+    total_recursion_calls += 1
+    if depth == 0 or game_over(state):
+        best_n = evaluate(state)
+        return [-1, -1, best_n]
+
+    # COMP is maximizing; HUMAN is minimizing
+    if player == COMP:
+        best = [-1, -1, -infinity]
+    else:
+        best = [-1, -1, +infinity]
+
+    for cell in empty_cells(state):
+        x, y = cell[0], cell[1]
+        state[x][y] = player
+        best_n = min_max_alpha_beta(state, depth - 1, -player, alpha, beta)
+        state[x][y] = 0
+        best_n[0], best_n[1] = x, y
+
+        if player == COMP:
+            if best_n[2] > best[2]:
+                best = best_n  # max value
+            alpha = max(alpha, best_n[2])
+            if beta <= alpha:
+                break
+        else:
+            if best_n[2] < best[2]:
+                best = best_n  # min value
+            beta = min(beta, best_n[2])
+            if beta <= alpha:
+                break
+
+    return best
+
+
 def clean():
     """
     Clears the console
@@ -183,7 +285,7 @@ def render(state, c_choice, h_choice):
         print('\n' + str_line)
 
 
-def ai_turn(c_choice, h_choice):
+def ai_turn(c_choice, h_choice, func=minimax, print_or_not=True):
     """
     It calls the minimax function if the depth < 9,
     else it choices a random coordinate.
@@ -196,21 +298,22 @@ def ai_turn(c_choice, h_choice):
         return
 
     clean()
-    print(f'Computer turn [{c_choice}]')
-    render(board, c_choice, h_choice)
+    if print_or_not:
+        print(f'Computer turn [{c_choice}]')
+        render(board, c_choice, h_choice)
 
     if depth == 9:
         x = choice([0, 1, 2])
         y = choice([0, 1, 2])
     else:
-        move = minimax(board, depth, COMP)
+        move = func(board, depth, COMP)
         x, y = move[0], move[1]
 
     set_move(x, y, COMP)
     # time.sleep(1)
 
 
-def human_turn(c_choice, h_choice):
+def human_turn(c_choice, h_choice, func=minimax, print_or_not=True):
     """
     The Human plays choosing a valid move.
     :param c_choice: computer's choice X or O
@@ -230,8 +333,9 @@ def human_turn(c_choice, h_choice):
     }
 
     clean()
-    print(f'Human turn [{h_choice}]')
-    render(board, c_choice, h_choice)
+    if print_or_not:
+        print(f'Human turn [{h_choice}]')
+        render(board, c_choice, h_choice)
 
     while move < 1 or move > 9:
         try:
@@ -239,7 +343,7 @@ def human_turn(c_choice, h_choice):
             if depth == 9:
                 coord = (choice([0, 1, 2]), choice([0, 1, 2]))
             else:
-                coord = minimax(board, depth, HUMAN)
+                coord = func(board, depth, HUMAN)
             can_move = set_move(coord[0], coord[1], HUMAN)
             move = 1
             if not can_move:
@@ -252,7 +356,7 @@ def human_turn(c_choice, h_choice):
             print('Bad choice')
 
 
-def main():
+def main(func=minimax):
     """
     Main function that calls all functions
     """
@@ -289,14 +393,15 @@ def main():
         except (KeyError, ValueError):
             print('Bad choice')
 
+    start = time.time()
     # Main loop of this game
     while len(empty_cells(board)) > 0 and not game_over(board):
         if first == 'N':
             ai_turn(c_choice, h_choice)
             first = ''
 
-        human_turn(c_choice, h_choice) # human 代码已经修改，实际上是调用minimax
-        ai_turn(c_choice, h_choice)
+        human_turn(c_choice, h_choice, func)  # human 代码已经修改，实际上是调用minimax
+        ai_turn(c_choice, h_choice, func)
 
     # Game over message
     if wins(board, HUMAN):
@@ -314,8 +419,30 @@ def main():
         render(board, c_choice, h_choice)
         print('DRAW!')
 
+    print("total recursion times: ", total_recursion_calls)
+    print("total time: ", time.time() - start)
+
     exit()
 
 
+def game(func):
+    clean()
+    h_choice = 'X'  # X or O
+    c_choice = 'O'  # X or O
+    start = time.time()
+    for i in range(10):
+        flush()
+        while len(empty_cells(board)) > 0 and not game_over(board):
+            human_turn(c_choice, h_choice, func, False)  # human 代码已经修改，实际上是调用minimax
+            ai_turn(c_choice, h_choice, func, False)
+
+    time_spent = time.time() - start
+    print(f'time spent: {time_spent} function: {func.__name__}')
+
+    return time_spent, total_recursion_calls
+
+
 if __name__ == '__main__':
-    main()
+    # main(min_max)
+    game(min_max)
+    game(min_max_alpha_beta)
