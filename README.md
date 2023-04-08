@@ -26,7 +26,7 @@
 
 - [x] 对抗搜索⚔（Min-Max搜索，α-β剪枝）
 - - [x] 井字棋
-- - [x] 四子棋（done, not smart enough）😵
+- - [x] 四子棋（done, not perfect enough, 后手不败？）😵
 
 <br>
 <hr>
