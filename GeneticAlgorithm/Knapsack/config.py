@@ -5,7 +5,7 @@ KNAPSACK_CAPACITY = 6404180
 
 # 读取物品信息
 import pandas as pd
-items = pd.read_csv('knapsack_items.csv')
+items = pd.read_csv('./knapsack_items.csv')
 # print(items)
 
 # 物品数量

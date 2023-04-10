@@ -11,7 +11,7 @@
 ``目前包含的算法有``
 - [x] 皇后问题
 - [x] 谷歌小恐龙AI训练(still working)
-- [ ] 背包问题 (working)
+- [ ] 背包问题 (working...🎒)
 
 
 <br>
