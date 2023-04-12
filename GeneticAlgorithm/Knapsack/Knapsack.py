@@ -7,20 +7,11 @@ from numpy import ndarray
 
 from config import KNAPSACK_CAPACITY, ITEMS_NAMES, ITEMS_WEIGHTS, ITEMS_VALUES, ITEMS_NUM
 import numpy as np
-import pandas as pd
 
+from matplotlib import pyplot as plt
+import matplotlib as mpl
 
-# 个体类
-class Individual(object):
-    def __init__(self, chromosome):
-        self.chromosome = chromosome  # 染色体
-        self.fitness = 0.0  # 适应度
-        self.weight = np.sum(self.chromosome * ITEMS_WEIGHTS)  # 重量
-        self.value = np.sum(self.chromosome * ITEMS_VALUES)  # 价值
-
-    def __str__(self):
-        return 'chromosome: {0}, fitness: {1}, weight: {2}, value: {3}'.format(self.chromosome, self.fitness,
-                                                                               self.weight, self.value)
+mpl.use('TkAgg')
 
 
 # 1. 对解空间进行编码
@@ -48,7 +39,7 @@ MUTATION_PROBABILITY = 0.1
 
 
 # 3. 初始化种群
-def generate_initial_population(population_size: int, individual_size: int) -> list:
+def generate_initial_population(population_size: int, individual_size: int) -> list[np.ndarray]:
     """
     随机生成一个种群
     :param population_size: 种群大小
@@ -56,24 +47,27 @@ def generate_initial_population(population_size: int, individual_size: int) -> l
     """
     population = []
     for i in range(population_size):
-        chromosome = chromosome_encoding(individual_size)
-        individual = Individual(chromosome)
+        individual = chromosome_encoding(individual_size)
         population.append(individual)
     return population
 
 
 # 4. 适应度函数
-def fitness_function(individual: Individual) -> Union[int, ndarray]:
+def fitness_function(individual: np.ndarray) -> int:
     """
     适应度函数
     :param individual: 个体
     """
-    return individual.value if individual.weight <= KNAPSACK_CAPACITY else 0
+    # 个体的总价值
+    total_value = sum(individual * ITEMS_VALUES)
+    # 个体的总重量
+    total_weight = sum(individual * ITEMS_WEIGHTS)
+    return total_value if total_weight <= KNAPSACK_CAPACITY else 0
 
 
 # 5. 筛选亲本（轮盘赌）
 # 根据适应度计算个体被选中的概率
-def calculate_probability(population: list) -> np.ndarray:
+def calculate_probability(population: list[np.ndarray]) -> np.ndarray:
     """
     计算个体被选中的概率
     :param population: 种群
@@ -83,7 +77,7 @@ def calculate_probability(population: list) -> np.ndarray:
     return probability
 
 
-def roulette_wheel_selection(population: list, parents_num: int = 0) -> list:
+def roulette_wheel_selection(population: list[np.ndarray], parents_num: int = 0) -> list[np.ndarray]:
     """
     轮盘赌选择
     :param population: 种群
@@ -96,57 +90,84 @@ def roulette_wheel_selection(population: list, parents_num: int = 0) -> list:
     return parents
 
 
+def tournament_selection(population: list[np.ndarray],
+                         tournament_size: int = 3,
+                         parents_num: int = 0) -> list[np.ndarray]:
+    """
+    锦标赛选择
+    :param population: 种群
+    :param tournament_size: 锦标赛的个体数
+    :param parents_num: 选择的父母个数
+    """
+    parents_num = len(population) if parents_num == 0 else parents_num
+    parents = []
+    for i in range(parents_num):
+        # 随机选择tournament_size个个体
+        tournament_individuals = np.random.choice(np.arange(len(population)), size=tournament_size, replace=False)
+        tournament_individuals = [population[i] for i in tournament_individuals]
+        # 选择适应度最高的个体
+        best_individual = select_best_individual(tournament_individuals)
+        parents.append(best_individual)
+    return parents
+
+
+def select(population: list, parents_num: int = 0) -> list:
+    """
+    结合轮盘赌选择和锦标赛选择
+    :param population: 种群
+    :param parents_num: 选择的父母个数
+    """
+    parents = []
+    parents_num = len(population) if parents_num == 0 else parents_num
+    # 轮盘赌选择一半的父母
+    parents.extend(roulette_wheel_selection(population, parents_num=parents_num // 2))
+    # 锦标赛选择一半的父母
+    parents.extend(tournament_selection(population, parents_num=parents_num - parents_num // 2))
+    return parents
+
+
 # 6. 繁殖后代（交叉、变异）
 # 交叉
-def crossover(parent1: Individual, parent2: Individual,
-              crossover_probability: float = 1) -> Individual:
+def crossover(parents: list) -> list:
     """
-    交叉
-    :param parent1: 亲本1
-    :param parent2: 亲本2
-    :param crossover_probability: 交叉概率
+    交叉操作
+    :param parents: 父母
     """
-    if np.random.rand() < crossover_probability:
-        point = np.random.randint(0, len(parent1.chromosome))
-        child = Individual(np.concatenate((parent1.chromosome[:point], parent2.chromosome[point:])))
-    else:
-        child = Individual(parent1.chromosome)
-    return child
+    children = []
+    for i in range(0, len(parents), 2):
+        # 随机选择交叉点
+        cross_point = np.random.randint(0, len(parents[i]))
+        # 交叉
+        child1 = np.concatenate((parents[i][:cross_point], parents[i + 1][cross_point:]))
+        child2 = np.concatenate((parents[i + 1][:cross_point], parents[i][cross_point:]))
+        children.append(child1)
+        children.append(child2)
+    return children
 
 
 # 变异
-def mutation(individual: Individual, mutation_probability: float = 1) -> Individual:
+def mutation(children: list[np.ndarray], mutation_rate: float) -> list[np.ndarray]:
     """
-    变异
-    :param individual: 个体
-    :param mutation_probability: 变异概率
+    变异操作
+    :param children: 子代
+    :param mutation_rate: 变异率
     """
-    for gene in range(len(individual.chromosome)):
-        if np.random.rand() < mutation_probability:
-            individual.chromosome[gene] ^= 1  # 异或运算，相当于取反
-    return individual
+    for i in range(len(children)):
+        new_chromosome = np.random.randint(0, 2, size=len(children[i]))
+        mutation_index = np.where(np.random.rand(len(children[i])) < mutation_rate)
+        children[i][mutation_index] = new_chromosome[mutation_index]
+    return children
 
 
 # 7. 选择下一代
-def next_generation(population: list, crossover_probability: float, mutation_probability: float) -> list:
+def select_best_individual(population: list) -> np.ndarray:
     """
-    选择下一代
+    选择最优个体
     :param population: 种群
-    :param crossover_probability: 交叉概率
-    :param mutation_probability: 变异概率
     """
-    parents = roulette_wheel_selection(population)
-    next_generation = []
-    for i in range(0, len(parents), 2):
-        parent1 = parents[i]
-        parent2 = parents[i + 1]
-        child1 = crossover(parent1, parent2, crossover_probability)
-        child2 = crossover(parent2, parent1, crossover_probability)
-        child1 = mutation(child1, mutation_probability)
-        child2 = mutation(child2, mutation_probability)
-        next_generation.append(child1)
-        next_generation.append(child2)
-    return next_generation
+    fitness = np.array([fitness_function(individual) for individual in population])
+    best_individual = population[np.argmax(fitness)]
+    return best_individual
 
 
 # 8. 终止条件
@@ -160,37 +181,66 @@ def is_termination_condition_met(iteration: int, iteration_times: int = ITERATIO
 
 
 # 9. 主函数
-def GeneticAlgorithm(population_size: int, iteration_times: int, crossover_probability: float,
-                     mutation_probability: float) -> Individual:
+def GeneticAlgorithm(population_size: int = POPULATION_SIZE,
+                     iteration_times: int = ITERATION_TIMES,
+                     mutation_probability: float = MUTATION_PROBABILITY,
+                     mutation_decay: float = 0.99,
+                     parents_num_percent: int = 10
+                     ) -> np.ndarray:
     """
     遗传算法
     :param population_size: 种群大小
     :param iteration_times: 迭代次数
-    :param crossover_probability: 交叉概率
     :param mutation_probability: 变异概率
+    :param mutation_decay: 变异概率衰减率
+    :param parents_num_percent: 父母个数百分比
     """
-    # 初始化种群
+    history_best_fitness = 0
     population = generate_initial_population(population_size, ITEMS_NUM)
-    # 迭代
-    iteration = 0
 
-    # 随迭代次数增加，突变概率减少
-    mutation_probability = 1 - (1 - mutation_probability) * iteration / iteration_times
-    best_fitness = 0
-    while best_fitness != 13692887:
-        population = next_generation(population, crossover_probability, mutation_probability)
-        # 计算最大适应度
-        fitness = [fitness_function(individual) for individual in population]
+    for i in range(iteration_times):
+        fitness = np.array([fitness_function(individual) for individual in population])
+        best_individual = population[np.argmax(fitness)]
         best_fitness = np.max(fitness)
-        print('iteration: {0}, max fitness: {1}'.format(iteration, best_fitness))
-        iteration += 1
-    # 计算适应度
-    fitness = [fitness_function(individual) for individual in population]
-    # 选择最优个体
+        history_best_fitness = max(history_best_fitness, best_fitness)
+        print(f'第{i + 1}次迭代，最优个体为{best_individual}，最优适应度为{best_fitness}，历史最优适应度为{history_best_fitness}')
+
+        # 去除population中fitness为0的个体
+        population = [population[i] for i in range(len(population)) if fitness[i] != 0]
+
+        parents = select(population, parents_num=population_size // parents_num_percent)
+        children = crossover(parents)
+
+        mutation_probability *= mutation_decay
+        # 绘制在两张图上
+
+        # plt.subplot(121)
+        # plt.plot(i + 1, best_fitness, 'ro')
+        # plt.xlabel('iteration')
+        # plt.ylabel('best fitness')
+        # plt.subplot(122)
+        # plt.plot(i + 1, mutation_probability, 'bo')
+        # plt.xlabel('iteration')
+        # plt.ylabel('mutation probability')
+
+        children = mutation(children, MUTATION_PROBABILITY)
+        population = children + [best_individual]
+        population.extend(generate_initial_population(POPULATION_SIZE - len(population), ITEMS_NUM))
+    fitness = np.array([fitness_function(individual) for individual in population])
     best_individual = population[np.argmax(fitness)]
+    best_fitness = np.max(fitness)
+    print('最优解：', best_individual)
+    print('最优解对应的总价值：', best_fitness)
+    print('最优解对应的总重量：', sum(best_individual * ITEMS_WEIGHTS))
+    print('历史最优解对应的总价值：', history_best_fitness)
+    # plt.show()
     return best_individual
 
 
 if __name__ == '__main__':
-    best_individual = GeneticAlgorithm(POPULATION_SIZE, ITERATION_TIMES, CROSSOVER_PROBABILITY, MUTATION_PROBABILITY)
-    print(best_individual)
+    best_individual = GeneticAlgorithm(population_size=10000,
+                                       iteration_times=1000,
+                                       mutation_probability=0.5,
+                                       mutation_decay=1,
+                                       parents_num_percent=4
+                                       )
