@@ -103,6 +103,7 @@ def reward(state: int, action: int, next_state: int) -> int:
     """
     return REWARD[state, action, next_state]
 
+
 def main():
     # Optimal Quantities
     # 最优状态价值函数
@@ -148,15 +149,6 @@ def main():
 
     print("V(s): {}".format(V))
 
-if __name__ == '__main__':
-    information = b"CiAgICDkurrlt6Xmmbrog73ljp/nkIbnrKzkuIDmrKHkvZzkuJoKICAgIOS9nOiAhe+8mjIwMjHnuqfkurrlt6Xmmbrog73kuJPkuJog5LuY6Im66LaFCiAgICA="
-    from base64 import b64decode
-    print(b64decode(information).decode())
-    main()
 
-    conclusion = """
-    由运行结果可见：
-    程序在迭代了30次之后，V*(s)就已经收敛了，但实际上肯定是无限趋近的，只是这里的浮点精度有限，所以迭代到30次之后就固定在了[3.5,2.5,0]
-    
-    （21人智付艺超）
-    """
+if __name__ == '__main__':
+    main()
